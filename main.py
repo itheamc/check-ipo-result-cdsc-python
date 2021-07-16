@@ -15,16 +15,30 @@ print(
 for company in companies:
     print(f"[✓] Enter __ {company['id']} __ for {company['name']}")
 
+
+# Creating function to process the response and convert on dictionary type
+def process_response(res):
+    _res = res
+    if 'true' in _res:
+        _res = _res.replace("true", "True")
+    if 'false' in _res:
+        _res = _res.replace("false", "False")
+    if 'null' in _res:
+        _res = _res.replace("null", "None")
+    try:
+        _res = ast.literal_eval(_res)
+    except SyntaxError as se:
+        _res = {'message': se.msg}
+    return _res
+
+
 while True:
     # Getting input from the user
     comp_id = input('\n[+] Enter Here_    ')
     user_boid = input('[+] Enter BOID_    ')
 
     # Checking whether share is allotted or not and processing the response to convert in dict
-    final_res = IpoResult.check_ipo_results(comp_id, user_boid)
-    final_res = final_res.replace("true", "True")
-    final_res = final_res.replace("false", "False")
-    final_res = final_res.replace("null", "None")
-    final_res = ast.literal_eval(final_res)
+    res = IpoResult.check_ipo_results(comp_id, user_boid)
+    _proceed_res = process_response(res)
 
-    print(f"\n\t\t_______ {final_res['message']} _______")
+    print(f"\n\t\t_______ {_proceed_res['message']} _______")
