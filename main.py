@@ -1,34 +1,5 @@
 # Importing the required packages internally and from the external library
-import ast
 from ipo_result import IpoResult
-
-
-# Creating function to process the company list
-def process_company_lists(response):
-    _res = response
-    if 'true' in _res:
-        _res = _res.replace("true", "True")
-    if 'false' in _res:
-        _res = _res.replace("false", "False")
-
-    _res = ast.literal_eval(_res)
-    return _res['body']
-
-
-# Creating function to process the response and convert on dictionary type
-def process_result_response(response):
-    _res = response
-    if 'true' in _res:
-        _res = _res.replace("true", "True")
-    if 'false' in _res:
-        _res = _res.replace("false", "False")
-    if 'null' in _res:
-        _res = _res.replace("null", "None")
-    try:
-        _res = ast.literal_eval(_res)
-    except SyntaxError as se:
-        _res = {'message': se.msg}
-    return _res
 
 
 # -----------------------------------------------------------
@@ -38,12 +9,10 @@ def process_result_response(response):
 # Printing the Header
 print(
     '------------------------------------------------------------------------------------\n\t\t------------------------ CHECK IPO RESULTS -----------------------\n------------------------------------------------------------------------------------')
-# Getting the list of companies from the server and proceeds the response
-companies = IpoResult.fetch_companies()
-# Processing the response
-proceed_companies_dict = process_company_lists(companies)
+# Getting the list of companies from the server
+companies = IpoResult.get_company_list()
 # Printing the companies name as a option for the user
-for company in proceed_companies_dict:
+for company in companies:
     print(f"[✓] Enter __ {company['id']} __ for {company['name']}")
 
 while True:
@@ -51,8 +20,6 @@ while True:
     comp_id = input('\n[+] Enter Here_    ')
     user_boid = input('[+] Enter BOID_    ')
 
-    # Checking whether share is allotted or not and processing the response to convert in dict
-    res = IpoResult.check_ipo_results(comp_id, user_boid)
-    _proceed_res = process_result_response(res)
-
-    print(f"\n\t\t_______ {_proceed_res['message']} _______")
+    # Checking whether share is allotted or not and printing on the console
+    res = IpoResult.get_ipo_result(company_id=comp_id, boid=user_boid)
+    print(f"\n\t\t_______ {res['message']} _______")
